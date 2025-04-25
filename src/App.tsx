@@ -7,10 +7,15 @@ import axiosInc from "./utils/axios";
 import { AuthContext } from "./context/AuthContext";
 import Loading from "./componenets/ui/Loading";
 import { Toaster } from "react-hot-toast";
+import Friends from "./pages/home/Friends";
+import Chat from "./pages/home/Chat";
+import FriendProfile from "./pages/home/FriendProfile";
+import useScreenWidth from "./hooks/ScreenWidth";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<Boolean>(true);
   const { user, setUser } = useContext(AuthContext)!;
+  const width = useScreenWidth();
 
   useEffect(() => {
     const getAuthState = async () => {
@@ -40,7 +45,12 @@ const App = () => {
       <Routes>
         <Route path="/login" element={!user._id ? <Login /> : < Navigate to={"/"} />} />
         <Route path="/Signup" element={!user._id ? <Signup /> : < Navigate to={"/"} />} />
-        <Route path="/" element={!user._id ? <Home /> : < Navigate to={"/login"} />} />
+        <Route path="/" element={!user._id ? <Home /> : < Navigate to={"/login"} />} >
+          {width < 640 && <Route path="friends" element={<Friends />} />}
+          <Route path="chat" element={<Chat />} />
+          <Route path="friend-profile" element={<FriendProfile />} />
+          <Route index element={width < 640 ? <Friends /> : <Chat />} />
+        </Route>
       </Routes>
       <Toaster />
     </div>

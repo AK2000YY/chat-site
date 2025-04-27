@@ -1,7 +1,6 @@
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import { useContext } from "react";
 import Form from "../../componenets/form/Form";
 import Input from "../../componenets/form/Input";
-import User from "../../types/user";
 import FormTitle from "../../componenets/form/FormTitle";
 import message from "../../assets/background.png";
 import Button from "../../componenets/ui/Button";
@@ -12,30 +11,24 @@ import toast from "react-hot-toast";
 
 const Login = () => {
     const { user, setUser } = useContext(AuthContext)!;
-    const [userForm, setUserForm] = useState<User>({
-        email: "",
-        password: ""
-    })
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setUserForm({
-            ...userForm,
-            [name]: value
-        })
-    }
-
-    const onSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+    const onSubmit = async (formData: FormData) => {
+        console.log(formData.get('email'), formData.get('password'))
         try {
-            const userRemote: any = await axiosInc.post("/auth/login", userForm);
+            const userRemote: any = await axiosInc.post("/auth/login", {
+                email: formData.get('email'),
+                password: formData.get('password')
+            });
             setUser({
                 ...user,
                 _id: userRemote.data._id
             });
-            toast.success("you're loged!")
+            toast.success("you're loged!", { id: "login" })
         } catch (error: any) {
-            toast.error(error.response.data.message)
+            if (error.response)
+                toast.error(error.response.data.message)
+            else
+                toast.error("error from server!", { id: "login" })
         }
     }
 
@@ -44,7 +37,7 @@ const Login = () => {
             className="bg-slate-950 overflow-hidden w-screen h-screen flex justify-center items-center relative"
         >
             <Form
-                onSubmit={onSubmit}
+                action={onSubmit}
             >
                 <FormTitle
                     title="Login"
@@ -54,16 +47,14 @@ const Login = () => {
                     <Input
                         name={"email"}
                         placeholder={"email"}
-                        onChange={handleChange}
                     />
                     <Input
                         name={"password"}
                         placeholder={"password"}
-                        onChange={handleChange}
                     />
                 </div>
                 <Button
-                    className="bg-violet-900"
+                    className="bg-violet-900 disabled:cursor-not-allowed disabled:text-white/50"
                     type="submit"
                 >
                     Login

@@ -11,45 +11,29 @@ import { AuthContext } from "../../context/AuthContext";
 import axiosInc from "../../utils/axios";
 
 const Signup = () => {
-    const { user, setUser } = useContext(AuthContext)!
-    const [userForm, setUserForm] = useState<User>({
-        userName: "",
-        fullName: {
-            firstName: "",
-            lastName: ""
-        },
-        email: "",
-        password: ""
-    });
+    const { user, setUser } = useContext(AuthContext)!;
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (name === "firstName" || name === "lastName") {
-            setUserForm({
-                ...userForm,
-                fullName: {
-                    ...userForm.fullName,
-                    [name]: value
-                } as { firstName: string; lastName: string }
-            })
-        } else
-            setUserForm({
-                ...userForm,
-                [name]: value
-            })
-    }
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = async (formData: FormData) => {
         try {
-            const userRemote: any = await axiosInc.post("/auth/signup", userForm);
+            const userRemote: any = await axiosInc.post("/auth/signup", {
+                userName: formData.get('userName'),
+                fullName: {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName')
+                },
+                email: formData.get("email"),
+                password: formData.get("password")
+            });
             setUser({
                 ...user,
                 _id: userRemote.data._id
             });
-            toast.success("create user")
+            toast.success("you're loged!", { id: "signup" })
         } catch (error: any) {
-            toast.error(error.response.data.message)
+            if (error.response)
+                toast.error(error.response.data.message)
+            else
+                toast.error("error from server!", { id: "signup" })
         }
     }
 
@@ -59,7 +43,7 @@ const Signup = () => {
         >
             <Form
                 className="py-5"
-                onSubmit={handleSubmit}
+                action={handleSubmit}
             >
                 <FormTitle
                     title="Signup"
@@ -69,38 +53,28 @@ const Signup = () => {
                     <Input
                         name={"userName"}
                         placeholder="user name"
-                        onChange={handleChange}
-                        value={userForm?.userName}
                     />
                     <div className="flex gap-x-1">
                         <Input
                             name={"firstName"}
                             placeholder={"first name"}
-                            onChange={handleChange}
-                            value={userForm?.fullName?.firstName}
                         />
                         <Input
                             name={"lastName"}
                             placeholder={"last name"}
-                            onChange={handleChange}
-                            value={userForm?.fullName?.lastName}
                         />
                     </div>
                     <Input
                         name={"email"}
                         placeholder={"email"}
-                        onChange={handleChange}
-                        value={userForm?.email}
                     />
                     <Input
                         name={"password"}
                         placeholder={"password"}
-                        onChange={handleChange}
-                        value={userForm?.password}
                     />
                 </div>
                 <Button
-                    className="bg-violet-900"
+                    className="bg-violet-900 disabled:cursor-not-allowed"
                     type="submit"
                 >
                     create account

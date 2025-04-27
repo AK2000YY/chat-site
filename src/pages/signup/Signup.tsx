@@ -1,7 +1,6 @@
-import { ChangeEvent, FormEvent, useContext, useState } from "react"
+import { useContext } from "react"
 import toast from "react-hot-toast";
 import Form from "../../componenets/form/Form"
-import User from "../../types/user"
 import FormTitle from "../../componenets/form/FormTitle";
 import Input from "../../componenets/form/Input";
 import Button from "../../componenets/ui/Button";

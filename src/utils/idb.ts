@@ -6,6 +6,7 @@ type Message = {
     friend: string,
     senderType: string,
     message?: string,
+    messageStatus: string,
     media?: string
 }
 
@@ -24,6 +25,7 @@ const initDB = async (): Promise<IDBPDatabase> => {
                 if (!db.objectStoreNames.contains(STORE_NAME)) {
                     const store = db.createObjectStore(STORE_NAME, { keyPath: '_id' });
                     store.createIndex("friend_id", ["friend", "_id"]);
+                    store.createIndex("messageStatus", "messageStatus")
                 }
             },
         });
@@ -52,6 +54,34 @@ const deleteMessage = async (_id: string): Promise<void> => {
     const db = await initDB();
     await db.delete(STORE_NAME, _id);
 };
+
+const getUnreadMessages = async (): Promise<{ friendId: string, unreadMessages: number }[]> => {
+    const result: Record<string, number> = {};
+
+    const db = await initDB();
+    const tr = db.transaction(STORE_NAME);
+    const store = tr.objectStore(STORE_NAME);
+    const index = store.index("messageStatus");
+
+    let cursor = await index.openCursor(IDBKeyRange.only('delivere'));
+    while (cursor) {
+        const message = cursor.value as Message;
+        const friendId = message.friend;
+
+        if (result[friendId]) {
+            result[friendId]++;
+        } else {
+            result[friendId] = 1;
+        }
+
+        cursor = await cursor.continue();
+    }
+
+    return Object.entries(result).map(([friendId, unreadMessages]) => ({
+        friendId,
+        unreadMessages
+    }));;
+}
 
 const getBeforeId = async (friendId: string, messageId?: string): Promise<Message[]> => {
     const messages: Message[] = [];
@@ -110,4 +140,4 @@ const getAfterId = async (friendId: string, messageId?: string): Promise<Message
 }
 
 
-export { addMessage, updateMessage, deleteMessage, getBeforeId, getAfterId }
+export { addMessage, getUnreadMessages, updateMessage, deleteMessage, getBeforeId, getAfterId }

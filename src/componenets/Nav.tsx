@@ -10,7 +10,7 @@ import cn from "../utils/functions";
 const Nav = () => {
     const iconStyle = "size-6 mb-3"
     return (
-        <div className="w-[100%] sm:w-[6%] md:w-[5%] lg:w-[4%] bg-slate-900 text-white rounded-xl p-3 pb-0 flex sm:flex-col justify-between items-center shadow-2xl">
+        <div className="w-[100%] sm:w-[6%] md:w-[5%] lg:w-[4%] bg-[#110e21] text-white rounded-xl p-3 pb-0 flex sm:flex-col justify-between items-center shadow-2xl">
             <RxPerson className={iconStyle} />
             <LiaUserFriendsSolid className={iconStyle} />
             <IoMdSearch className={iconStyle} />

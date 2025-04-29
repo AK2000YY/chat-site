@@ -11,6 +11,7 @@ import Friends from "./pages/home/Friends";
 import Chat from "./pages/home/Chat";
 import FriendProfile from "./pages/home/FriendProfile";
 import useScreenWidth from "./hooks/ScreenWidth";
+import { ChatProvider } from "./context/ChatContext";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<Boolean>(true);
@@ -45,15 +46,15 @@ const App = () => {
       <Routes>
         <Route path="/login" element={!user._id ? <Login /> : < Navigate to={"/"} />} />
         <Route path="/Signup" element={!user._id ? <Signup /> : < Navigate to={"/"} />} />
-        <Route path="/" element={!user._id ? <Home /> : < Navigate to={"/login"} />} >
+        <Route path="/" element={user._id ? <ChatProvider><Home /></ChatProvider> : < Navigate to={"/login"} />} >
           {width < 640 && <Route path="friends" element={<Friends />} />}
           <Route path="chat" element={<Chat />} />
           <Route path="friend-profile" element={<FriendProfile />} />
           <Route index element={width < 640 ? <Friends /> : <Chat />} />
         </Route>
-      </Routes>
+      </Routes >
       <Toaster />
-    </div>
+    </div >
   );
 }
 

@@ -1,6 +1,6 @@
 type Changes = {
-    sender: string,
-    count: number
+    friendId: string,
+    unreadMessages: number
 }
 
 

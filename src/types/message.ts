@@ -7,6 +7,7 @@ type Message = {
     isShowEdit: string,
     sender: string,
     receiver: string,
+    friend?: string
 }
 
 export default Message;

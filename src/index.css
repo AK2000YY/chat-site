@@ -6,3 +6,21 @@
     --breakpoint-md: 768px;
     --breakpoint-lg: 1024px;
 }
+
+
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #8e52ff;
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}

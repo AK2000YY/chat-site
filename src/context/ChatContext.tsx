@@ -12,6 +12,7 @@ const ChatProvider = ({ children }: {
     children: ReactNode
 }) => {
     const [chatInfo, setChatInfo] = useState<ChatInfo>({
+        messages: [],
         changes: [],
         selectedUser: "",
         isLoading: true

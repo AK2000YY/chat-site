@@ -1,20 +1,10 @@
 import { openDB, IDBPDatabase } from 'idb';
-
-
-type Message = {
-    _id: string,
-    friend: string,
-    senderType: string,
-    message?: string,
-    messageStatus: string,
-    media?: string
-}
-
+import Message from '../types/message';
 
 const DB_NAME = 'chat';
 const STORE_NAME = 'messages';
 const VERSION = 1;
-const LIMIT = 30;
+const LIMIT = 40;
 
 let dbPromise: Promise<IDBPDatabase>;
 
@@ -43,10 +33,17 @@ const addMessage = async (messages: Message[]) => {
     await tx.done;
 };
 
-const updateMessage = async (message: Message): Promise<void> => {
+const updateMessage = async (id: string, messageStatus: string): Promise<void> => {
     const db = await initDB();
     const tx = db.transaction(STORE_NAME, 'readwrite');
-    await tx.store.put(message);
+    const store = tx.objectStore(STORE_NAME);
+
+    const existingMessage = await store.get(id);
+    if (existingMessage) {
+        existingMessage.messageStatus = messageStatus;
+        await store.put(existingMessage);
+    }
+
     await tx.done;
 };
 
@@ -66,7 +63,7 @@ const getUnreadMessages = async (): Promise<{ friendId: string, unreadMessages: 
     let cursor = await index.openCursor(IDBKeyRange.only('delivere'));
     while (cursor) {
         const message = cursor.value as Message;
-        const friendId = message.friend;
+        const friendId = message.friend!;
 
         if (result[friendId]) {
             result[friendId]++;
@@ -92,12 +89,17 @@ const getBeforeId = async (friendId: string, messageId?: string): Promise<Messag
     let range;
 
     if (!messageId)
-        range = IDBKeyRange.lowerBound([friendId, '\uffff'])
+        range = IDBKeyRange.bound(
+            [friendId, ''],
+            [friendId, '\uffff'],
+            true,
+            true
+        )
     else
         range = IDBKeyRange.bound(
             [friendId, ''],
             [friendId, messageId],
-            false,
+            true,
             true
         );
 
@@ -108,10 +110,10 @@ const getBeforeId = async (friendId: string, messageId?: string): Promise<Messag
         cursor = await cursor.continue();
     }
 
-    return messages;
+    return messages.reverse();
 }
 
-const getAfterId = async (friendId: string, messageId?: string): Promise<Message[]> => {
+const getAfterId = async (friendId: string, messageId: string): Promise<Message[]> => {
     const messages: Message[] = [];
     const db = await initDB();
     const tr = db.transaction(STORE_NAME);
@@ -119,15 +121,12 @@ const getAfterId = async (friendId: string, messageId?: string): Promise<Message
     const index = store.index("friend_id");
     let range;
 
-    if (!messageId)
-        range = IDBKeyRange.upperBound([friendId, ''])
-    else
-        range = IDBKeyRange.bound(
-            [friendId, messageId],
-            [friendId, '\uffff'],
-            true,
-            false
-        );
+    range = IDBKeyRange.bound(
+        [friendId, messageId],
+        [friendId, '\uffff'],
+        true,
+        false
+    )
 
     let cursor = await index.openCursor(range, 'next');
 

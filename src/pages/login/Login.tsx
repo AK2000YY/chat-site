@@ -8,13 +8,14 @@ import Image from "../../componenets/ui/Image";
 import axiosInc from "../../utils/axios";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import { clearData } from "../../utils/idb";
 
 const Login = () => {
     const { user, setUser } = useContext(AuthContext)!;
 
     const onSubmit = async (formData: FormData) => {
-        console.log(formData.get('email'), formData.get('password'))
         try {
+            await clearData();
             const userRemote: any = await axiosInc.post("/auth/login", {
                 email: formData.get('email'),
                 password: formData.get('password')

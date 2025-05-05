@@ -15,7 +15,8 @@ const initDB = async (): Promise<IDBPDatabase> => {
                 if (!db.objectStoreNames.contains(STORE_NAME)) {
                     const store = db.createObjectStore(STORE_NAME, { keyPath: '_id' });
                     store.createIndex("friend_id", ["friend", "_id"]);
-                    store.createIndex("messageStatus", "messageStatus")
+                    store.createIndex("messageStatus", "messageStatus");
+                    store.createIndex("user_messages", ["sender", "messageStatus"]);
                 }
             },
         });
@@ -52,7 +53,34 @@ const deleteMessage = async (_id: string): Promise<void> => {
     await db.delete(STORE_NAME, _id);
 };
 
-const getUnreadMessages = async (): Promise<{ friendId: string, unreadMessages: number }[]> => {
+
+const getUserMessages = async (userId: string): Promise<string[]> => {
+    const result: string[] = [];
+    const db = await initDB();
+    const tr = db.transaction(STORE_NAME);
+    const store = tr.objectStore(STORE_NAME);
+    const index = store.index("user_messages");
+
+    let cursor = await index.openCursor(IDBKeyRange.only([userId, 'sent']));
+
+    while (cursor) {
+        const message = cursor.value as Message;
+        result.push(message._id!);
+        cursor = await cursor.continue();
+    }
+
+    cursor = await index.openCursor(IDBKeyRange.only([userId, 'delivere']));
+
+    while (cursor) {
+        const message = cursor.value as Message;
+        result.push(message._id!);
+        cursor = await cursor.continue();
+    }
+
+    return result;
+}
+
+const getUnreadMessages = async (userId: string): Promise<{ friendId: string, unreadMessages: number }[]> => {
     const result: Record<string, number> = {};
 
     const db = await initDB();
@@ -63,6 +91,12 @@ const getUnreadMessages = async (): Promise<{ friendId: string, unreadMessages: 
     let cursor = await index.openCursor(IDBKeyRange.only('delivere'));
     while (cursor) {
         const message = cursor.value as Message;
+
+        if (message.sender === userId) {
+            cursor = await cursor.continue();
+            continue;
+        }
+
         const friendId = message.friend!;
 
         if (result[friendId]) {
@@ -138,5 +172,12 @@ const getAfterId = async (friendId: string, messageId: string): Promise<Message[
     return messages;
 }
 
+const clearData = async () => {
+    const db = await initDB();
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    await tx.objectStore(STORE_NAME).clear();
+    await tx.done;;
+}
 
-export { addMessage, getUnreadMessages, updateMessage, deleteMessage, getBeforeId, getAfterId }
+
+export { addMessage, getUnreadMessages, getUserMessages, updateMessage, deleteMessage, getBeforeId, getAfterId, clearData }

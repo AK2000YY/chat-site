@@ -14,6 +14,7 @@ const ChatProvider = ({ children }: {
     const [chatInfo, setChatInfo] = useState<ChatInfo>({
         messages: [],
         changes: [],
+        friends: [],
         selectedUser: "",
         isLoading: true
     });

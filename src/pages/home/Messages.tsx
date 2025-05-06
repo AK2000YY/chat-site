@@ -4,15 +4,17 @@ import Message from "./Message"
 import axiosInc from "../../utils/axios";
 import { getUnreadMessages, updateMessage } from "../../utils/idb";
 import { chatContext } from "../../context/ChatContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Messages = ({ messages, userId }: {
     messages: Msg[],
     userId: string
 }) => {
 
+    const { user } = useContext(AuthContext)!;
     const ref = useRef<HTMLDivElement>(null);
     const [messagesId, setMessagesId] = useState<Set<string>>(new Set());
-    const { setChatInfo } = useContext(chatContext)!;
+    const { chatInfo, setChatInfo } = useContext(chatContext)!;
 
     useEffect(() => {
 
@@ -69,12 +71,12 @@ const Messages = ({ messages, userId }: {
     return (
         <div
             ref={ref}
-            className="overflow-y-auto p-2"
+            className="overflow-y-auto p-2 grow"
         >
             {messages.map(ele =>
                 <Message
                     key={ele._id}
-                    avater=""
+                    avater={ele.sender === user._id! ? user.avater! : chatInfo.friends.find(fr => fr._id! === ele.sender)!.avater!}
                     message={ele}
                     position={ele.sender === userId ? "left" : "right"}
                 />

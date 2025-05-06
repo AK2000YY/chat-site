@@ -1,5 +1,5 @@
-import { RxPerson } from "react-icons/rx"
 import Friend from "../../types/friend"
+import Avatar from "../../componenets/ui/Avatar"
 
 const FriendCard = ({ user, unreadMessages, onSelectUser }: {
     user: Friend,
@@ -9,13 +9,12 @@ const FriendCard = ({ user, unreadMessages, onSelectUser }: {
 
     return (
         <div
-            className="relative bg-[#181030] p-2 mb-2 w-full h-[60px] mx-auto rounded-sm flex items-center gap-x-2 text-sm font-sans"
+            className="relative bg-[#181030] p-2 mb-2 w-full h-[60px] mx-auto rounded-sm flex items-center gap-x-2 text-sm font-sans cursor-pointer"
             onClick={() => onSelectUser(user._id)}
         >
-            {user.avater === "" ?
-                <RxPerson className="text-white border-1 rounded-full size-6" /> :
-                <img
-                    src={user.avater}
+            {user.avater !== "" &&
+                <Avatar
+                    image={user.avater}
                 />
             }
             <h1 className="text-white">{user.fullName?.firstName + " " + user.fullName?.lastName}</h1>

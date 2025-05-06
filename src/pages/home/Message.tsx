@@ -18,7 +18,7 @@ const Message = ({ avater, message, position }: {
         >
             {position === 'left' && <Avatar image={avater} />}
             <p
-                className={cn("bg-amber-100 w-fit h-fit px-2 py-1.5 rounded relative", { 'pr-6': position === 'left' })}
+                className={cn("bg-[#211842] text-white w-fit h-fit px-2 py-1.5 rounded relative", { 'pr-6 bg-[#9e7ffa]': position === 'left' })}
             >
                 {message.message}
                 {position === 'left' && <CheckMark status={message.messageStatus} />}
@@ -43,7 +43,7 @@ const CheckMark = ({ status }: { status: string }) => {
     }
 
     return (
-        <span className={cn("absolute text-gray-600 bottom-1 right-1", { 'text-blue-500': status === 'read' })}>
+        <span className={cn("absolute text-gray-600 bottom-1 right-1", { 'text-green-300': status === 'read' })}>
             {icon}
         </span>
     );

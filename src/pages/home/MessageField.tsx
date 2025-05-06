@@ -31,19 +31,19 @@ const MessageField = ({ addMessageToList }: {
 
     return (
         <Form
-            className="py-0 px-2 h-fit flex flex-row gap-x-1.5 items-center sm:w-full md:w-full lg:w-full"
+            className="bg-[#181030] py-0 px-2 h-fit flex flex-row gap-x-1.5 items-center w-full sm:w-full md:w-full lg:w-full shadow"
             action={sendMessage}
         >
             <IoIosAdd
                 className="bg-slate-600 h-10 w-14 rounded-xl text-white"
             />
             <Input
-                className="px-1 h-10 bg-transparent focus:outline-0"
+                className="px-1 h-6 bg-transparent focus:outline-0"
                 name="message"
                 placeholder="Enter message"
             />
             <Button
-                className="w-[20%] bg-[#ddfc7e] h-10 flex text-[#000500] text-md font-medium items-center justify-center gap-x-1"
+                className="w-[20%] px-2 bg-[#ddfc7e] h-10 flex text-[#000500] text-xs sm:text-md font-medium items-center justify-center gap-x-1"
                 type="submit"
             >
                 Send

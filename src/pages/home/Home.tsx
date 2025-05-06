@@ -24,9 +24,11 @@ const Home = () => {
         const checkSentMessages = async () => {
             try {
                 const userMessages = await getUserMessages(user._id!);
+                console.log(userMessages);
                 const messagesRes = await axiosInc.post("/message/check-sent-message", {
                     messagesId: userMessages
                 });
+                console.log(messagesRes.data);
                 messagesRes.data.forEach((msg: Message) => {
                     updateMessage(msg._id!, msg.messageStatus);
                 });

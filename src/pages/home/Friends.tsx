@@ -3,17 +3,22 @@ import { chatContext } from "../../context/ChatContext";
 import axiosInc from "../../utils/axios";
 import Friend from "../../types/friend";
 import FriendCard from "./FriendCard";
+import useScreenWidth from "../../hooks/ScreenWidth";
+import { useNavigate } from "react-router-dom";
 
 const Friends = () => {
 
     const [friends, setFriends] = useState<Friend[]>([]);
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
+    const width = useScreenWidth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const setInfo = async () => {
             try {
                 const friendsRes = await axiosInc.get('/friend');
                 setFriends(friendsRes.data);
+                setChatInfo(prev => ({ ...prev, friends: friendsRes.data }))
             } catch (e) {
                 console.log(e);
             }
@@ -23,6 +28,7 @@ const Friends = () => {
 
     const handleSelectedUser = (id: string) => {
         setChatInfo(prev => ({ ...prev, selectedUser: id }))
+        if (width < 640) navigate('/chat');
     }
 
     return (

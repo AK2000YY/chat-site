@@ -61,20 +61,20 @@ const getUserMessages = async (userId: string): Promise<string[]> => {
     const store = tr.objectStore(STORE_NAME);
     const index = store.index("user_messages");
 
-    let cursor = await index.openCursor(IDBKeyRange.only([userId, 'sent']));
+    let cursor1 = await index.openCursor(IDBKeyRange.only([userId, 'sent']));
 
-    while (cursor) {
-        const message = cursor.value as Message;
+    while (cursor1) {
+        const message = cursor1.value as Message;
         result.push(message._id!);
-        cursor = await cursor.continue();
+        cursor1 = await cursor1.continue();
     }
 
-    cursor = await index.openCursor(IDBKeyRange.only([userId, 'delivere']));
+    let cursor2 = await index.openCursor(IDBKeyRange.only([userId, 'delivere']));
 
-    while (cursor) {
-        const message = cursor.value as Message;
+    while (cursor2) {
+        const message = cursor2.value as Message;
         result.push(message._id!);
-        cursor = await cursor.continue();
+        cursor2 = await cursor2.continue();
     }
 
     return result;

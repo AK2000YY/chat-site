@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import Home from "./pages/home/Home";
+import Chat from "./pages/chat/Chat";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import { useContext, useEffect, useState } from "react";
@@ -7,11 +7,14 @@ import axiosInc from "./utils/axios";
 import { AuthContext } from "./context/AuthContext";
 import Loading from "./componenets/ui/Loading";
 import { Toaster } from "react-hot-toast";
-import Friends from "./pages/home/Friends";
-import Chat from "./pages/home/Chat";
-import FriendProfile from "./pages/home/FriendProfile";
+import FriendsBox from "./pages/chat/FriendsBox";
+import ChatBox from "./pages/chat/ChatBox";
+import FriendProfile from "./pages/chat/FriendProfile";
 import useScreenWidth from "./hooks/ScreenWidth";
 import { ChatProvider } from "./context/ChatContext";
+import Setting from "./pages/setting/Setting";
+import Friends from "./pages/friends/Friends";
+import Navigation from "./pages/navigation/Navigation";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<Boolean>(true);
@@ -46,11 +49,14 @@ const App = () => {
       <Routes>
         <Route path="/login" element={!user._id ? <Login /> : < Navigate to={"/"} />} />
         <Route path="/Signup" element={!user._id ? <Signup /> : < Navigate to={"/"} />} />
-        <Route path="/" element={user._id ? <ChatProvider><Home /></ChatProvider> : < Navigate to={"/login"} />} >
-          {width < 640 && <Route path="friends" element={<Friends />} />}
-          <Route path="chat" element={<Chat />} />
-          <Route path="friend-profile" element={<FriendProfile />} />
-          <Route index element={width < 640 ? <Friends /> : <Chat />} />
+        <Route path="/" element={user._id ? <ChatProvider><Navigation /></ChatProvider> : < Navigate to={"/login"} />}>
+          <Route path="" element={<Chat />} >
+            <Route path="/chat" element={<ChatBox />} />
+            <Route path="/friend-profile" element={<FriendProfile />} />
+            <Route index element={width < 640 ? <FriendsBox /> : <ChatBox />} />
+          </Route>
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/setting" element={<Setting />} />
         </Route>
       </Routes >
       <Toaster />
@@ -59,3 +65,11 @@ const App = () => {
 }
 
 export default App;
+
+
+{/* <Route path="/" element={user._id ? <ChatProvider><Home /></ChatProvider> : < Navigate to={"/login"} />} >
+          {width < 640 && <Route path="friends" element={<Friends />} />}
+          <Route path="chat" element={<Chat />} />
+          <Route path="friend-profile" element={<FriendProfile />} />
+          <Route index element={width < 640 ? <Friends /> : <Chat />} />
+        </Route> */}

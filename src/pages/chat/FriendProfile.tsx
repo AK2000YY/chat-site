@@ -7,7 +7,7 @@ const FriendProfile = () => {
     const { chatInfo } = useContext(chatContext)!;
     return (
         <div
-            className="w-[100%] h-[90%] sm:w-[60%] sm:h-[100%] lg:w-[20%] p-3 bg-[#110e21] rounded-xl flex flex-col items-center gap-y-3"
+            className="w-[100%] h-[100%] sm:w-[60%] lg:w-[25%] p-3 bg-[#110e21] rounded-xl flex flex-col items-center gap-y-3"
         >
             {chatInfo.selectedUser != "" &&
                 <FriendComponenet

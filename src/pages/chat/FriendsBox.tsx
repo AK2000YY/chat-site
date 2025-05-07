@@ -6,7 +6,7 @@ import FriendCard from "./FriendCard";
 import useScreenWidth from "../../hooks/ScreenWidth";
 import { useNavigate } from "react-router-dom";
 
-const Friends = () => {
+const FriendsBox = () => {
 
     const [friends, setFriends] = useState<Friend[]>([]);
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
@@ -33,7 +33,7 @@ const Friends = () => {
 
     return (
         <div
-            className="w-[100%] h-[90%] p-2 sm:w-[30%] sm:h-[100%] lg:w-[20%] bg-[#110e21] rounded-xl"
+            className="w-[100%] h-[100%] p-2 sm:w-[30%] lg:w-[25%] bg-[#110e21] rounded-xl"
         >
             {friends.map(friend =>
                 <FriendCard
@@ -47,4 +47,4 @@ const Friends = () => {
     )
 }
 
-export default Friends
+export default FriendsBox

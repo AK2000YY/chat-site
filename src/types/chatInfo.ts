@@ -6,8 +6,7 @@ type ChatInfo = {
     messages: Message[],
     changes: Changes[],
     friends: Friend[],
-    selectedUser?: string,
-    isLoading: boolean
+    selectedUser?: string
 }
 
 export default ChatInfo;

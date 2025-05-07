@@ -15,8 +15,7 @@ const ChatProvider = ({ children }: {
         messages: [],
         changes: [],
         friends: [],
-        selectedUser: "",
-        isLoading: true
+        selectedUser: ""
     });
 
     return (

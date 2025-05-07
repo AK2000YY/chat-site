@@ -22,7 +22,7 @@ const Login = () => {
             });
             setUser({
                 ...user,
-                _id: userRemote.data._id
+                ...userRemote.data
             });
             toast.success("you're loged!", { id: "login" })
         } catch (error: any) {

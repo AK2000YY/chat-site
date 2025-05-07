@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Msg from "../../types/message"
 import Message from "./Message"
 import axiosInc from "../../utils/axios";
-import { getUnreadMessages, updateMessage } from "../../utils/idb";
+import { getBeforeId, getUnreadMessages, updateMessage } from "../../utils/idb";
 import { chatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -41,8 +41,29 @@ const Messages = ({ messages, userId }: {
             });
         }
 
+        const scrollToNewMessage = async () => {
+            try {
+                const messages = await getBeforeId(chatInfo.selectedUser!);
+                if (chatInfo.selectedUser != "" && messages.length > 0 && chatInfo.messages.length > 0 && messages[messages.length - 1]._id === chatInfo.messages[chatInfo.messages.length - 1]._id && ref.current) {
+                    ref.current.scrollTo({
+                        top: ref.current.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // const deleteFromStartOrEnd = () => {
+        // TODO()
+        // }
+
         const observer = new IntersectionObserver(
             (entries) => {
+                // if (entries.length > 0) {
+                // TODO()
+                // }
                 entries.forEach((entry) => {
                     const messageId = entry.target.getAttribute('message-id');
                     const messageStatus = entry.target.getAttribute('message-status');
@@ -60,6 +81,8 @@ const Messages = ({ messages, userId }: {
             Array.from(ref.current.children).forEach(ele => {
                 observer.observe(ele);
             });
+
+        scrollToNewMessage();
 
         return () => {
             if (ref.current) {

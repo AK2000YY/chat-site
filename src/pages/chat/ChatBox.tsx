@@ -3,7 +3,7 @@ import MessageField from "./MessageField"
 import Messages from "./Messages"
 import { chatContext } from "../../context/ChatContext"
 import { AuthContext } from "../../context/AuthContext"
-import { getBeforeId } from "../../utils/idb"
+import { addMessage, getBeforeId } from "../../utils/idb"
 import axiosInc from "../../utils/axios"
 import ChatHeader from "./ChatHeader"
 
@@ -15,14 +15,16 @@ const ChatBox = () => {
         let ignore = false;
         const getChatMessages = async () => {
             let messageRes = await getBeforeId(chatInfo.selectedUser!);
-            if (messageRes.length < 40) {
+            if (messageRes.length === 0) {
                 const messageRemote = await axiosInc.post("/message/get-messages", {
                     friendId: chatInfo.selectedUser
                 });
                 messageRes = messageRemote.data;
+                addMessage(messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }));
             }
-            if (!ignore)
+            if (!ignore) {
                 setChatInfo((prev) => ({ ...prev, messages: messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }) }));
+            }
         }
         if (chatInfo.selectedUser)
             getChatMessages();
@@ -48,6 +50,7 @@ const ChatBox = () => {
             />
             {chatInfo.selectedUser &&
                 <MessageField
+                    key={chatInfo.selectedUser}
                     addMessageToList={(msg) => setChatInfo((prev) => ({ ...prev, messages: [...prev.messages, msg] }))}
                 />
             }

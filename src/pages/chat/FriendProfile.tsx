@@ -25,11 +25,21 @@ const FriendComponenet = ({ friend }: { friend: Friend }) => {
                 className="size-20"
                 image={friend.avater}
             />
-            <div className="text-center">
+            <div className="text-center w-[100%]">
                 <h1 className="text-sm text-white font-medium mb-0.5">{friend.fullName.firstName} {friend.fullName.lastName}</h1>
                 <p className="text-xs text-gray-400 font-light">@{friend.userName}</p>
+                <hr className="bg-gray-400 w-[100%] h-0.5 mt-5" />
+                <ShredMedia />
             </div>
         </>
+    )
+}
+
+const ShredMedia = () => {
+    return (
+        <div className="w-full p-3 text-start text-white">
+            <h1 className="text-md font-medium">Shared Media</h1>
+        </div>
     )
 }
 

@@ -14,16 +14,22 @@ const Message = ({ avater, message, position }: {
         <div
             message-id={message._id}
             message-status={message.messageStatus != 'read' && message.friend === message.sender ? "ok" : "NoOk"}
-            className={cn("bg-transparent mb-1 flex items-center gap-2 justify-start", align)}
+            className={cn("bg-transparent mb-1 flex gap-2 justify-start items-center", align, { 'items-end': message.media != "" })}
         >
-            {position === 'left' && <Avatar image={avater} />}
-            <p
-                className={cn("bg-[#211842] text-white w-fit h-fit px-2 py-1.5 rounded relative", { 'pr-6 bg-[#9e7ffa]': position === 'left' })}
-            >
-                {message.message}
-                {position === 'left' && <CheckMark status={message.messageStatus} />}
-            </p>
-            {position === 'right' && <Avatar image={avater} />}
+            {position === 'left' && <Avatar className="size-6" image={avater} />}
+            <div className={cn("w-40 bg-[#211842] rounded flex flex-col items-center", { 'bg-[#9e7ffa]': position === 'left' })}>
+                {message.media != "" &&
+                    <img
+                        className="w-40 p-1 h-30 mx-auto rounded-xl"
+                        src={"http://localhost:5000/uploads/" + message.media}
+                    />
+                }
+                <p className={cn("w-[100%] min-h-6 px-1 relative text-white", { "pr-6": position === 'left', 'pb-1': message.message != "" })}>
+                    {message.message}
+                    {position === 'left' && <CheckMark status={message.messageStatus} />}
+                </p>
+            </div>
+            {position === 'right' && <Avatar className="size-6" image={avater} />}
         </div>
     )
 }

@@ -1,30 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { chatContext } from "../../context/ChatContext";
-import axiosInc from "../../utils/axios";
-import Friend from "../../types/friend";
-import FriendCard from "./FriendCard";
+// import FriendCard from "./FriendCard";
 import useScreenWidth from "../../hooks/ScreenWidth";
 import { useNavigate } from "react-router-dom";
+import FriendCard from "../../componenets/ui/FriendCard";
 
 const FriendsBox = () => {
 
-    const [friends, setFriends] = useState<Friend[]>([]);
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
     const width = useScreenWidth();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const setInfo = async () => {
-            try {
-                const friendsRes = await axiosInc.get('/friend');
-                setFriends(friendsRes.data);
-                setChatInfo(prev => ({ ...prev, friends: friendsRes.data }))
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        setInfo();
-    }, [])
 
     const handleSelectedUser = (id: string) => {
         setChatInfo(prev => ({ ...prev, selectedUser: id }))
@@ -35,14 +20,22 @@ const FriendsBox = () => {
         <div
             className="w-[100%] h-[100%] p-2 sm:w-[30%] lg:w-[25%] bg-[#110e21] rounded-xl"
         >
-            {friends.map(friend =>
-                <FriendCard
+            {chatInfo.friends.map(friend => {
+                const unreadMessages = chatInfo.changes.find(ele => ele.friendId === friend._id)?.unreadMessages ?? 0;
+                return <FriendCard
                     key={friend._id}
-                    user={friend}
-                    unreadMessages={chatInfo.changes.find(ele => ele.friendId === friend._id)?.unreadMessages ?? 0}
-                    onSelectUser={handleSelectedUser}
-                />
-            )}
+                    friend={friend}
+                    onSelectFriend={handleSelectedUser}
+                >
+                    {unreadMessages > 0 &&
+                        <div
+                            className="absolute right-1 bg-violet-500 w-fit h-fit px-2 rounded text-white"
+                        >
+                            {unreadMessages}
+                        </div>
+                    }
+                </FriendCard>
+            })}
         </div>
     )
 }

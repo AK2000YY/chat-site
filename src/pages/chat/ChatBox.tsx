@@ -5,11 +5,15 @@ import { chatContext } from "../../context/ChatContext"
 import { AuthContext } from "../../context/AuthContext"
 import { addMessage, getBeforeId } from "../../utils/idb"
 import axiosInc from "../../utils/axios"
-import ChatHeader from "./ChatHeader"
+import FriendCard from "../../componenets/ui/FriendCard"
+import useScreenWidth from "../../hooks/ScreenWidth"
+import { useNavigate } from "react-router-dom"
 
 const ChatBox = () => {
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
     const { user } = useContext(AuthContext)!;
+    const width = useScreenWidth();
+    const navigate = useNavigate()
 
     useEffect(() => {
         let ignore = false;
@@ -40,8 +44,11 @@ const ChatBox = () => {
             className="w-[100%] h-[100%] p-1 sm:w-[60%] lg:w-[45%] bg-[#110e21] rounded-xl flex flex-col justify-between gap-2"
         >
             {chatInfo.selectedUser &&
-                <ChatHeader
+                <FriendCard
                     friend={chatInfo.friends.find(ele => ele._id === chatInfo.selectedUser)!}
+                    onSelectFriend={() => {
+                        if (width < 1024) navigate('/friend-profile')
+                    }}
                 />
             }
             <Messages

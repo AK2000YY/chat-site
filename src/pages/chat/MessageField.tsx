@@ -49,7 +49,7 @@ const MessageField = ({ addMessageToList }: {
 
     return (
         <Form
-            className="bg-[#181030] py-0 px-2 h-fit flex flex-row gap-x-1.5 items-center w-full sm:w-full md:w-full lg:w-full shadow relative"
+            className="bg-[#181030] py-1 px-2 h-fit flex flex-row gap-x-1.5 items-center w-full sm:w-full md:w-full lg:w-full shadow relative"
             action={sendMessage}
         >
             {preview &&
@@ -74,16 +74,16 @@ const MessageField = ({ addMessageToList }: {
                     onChange={handleImageChange}
                 />
                 <IoIosAdd
-                    className="bg-slate-600 h-10 w-14 rounded-xl text-white"
+                    className="bg-slate-600 h-9 w-14 rounded-xl text-white"
                 />
             </label>
             <Input
-                className="px-1 h-6 grow bg-transparent focus:outline-0"
+                className="px-1 h-9 grow bg-transparent focus:outline-0"
                 name="message"
                 placeholder="Enter message"
             />
             <Button
-                className="w-[20%] px-2 bg-[#ddfc7e] h-10 flex text-[#000500] text-xs sm:text-md font-medium items-center justify-center gap-x-1"
+                className="w-[20%] px-2 bg-[#ddfc7e] h-9 flex text-[#000500] text-xs sm:text-md font-medium items-center justify-center gap-x-1"
                 type="submit"
             >
                 Send

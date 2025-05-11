@@ -16,7 +16,7 @@ const Message = ({ avater, message, position }: {
             message-status={message.messageStatus != 'read' && message.friend === message.sender ? "ok" : "NoOk"}
             className={cn("bg-transparent mb-1 flex gap-2 justify-start items-center", align, { 'items-end': message.media != "" })}
         >
-            {position === 'left' && <Avatar className="size-6" image={avater} />}
+            {position === 'left' && <Avatar className="size-6" image={avater != "" ? "http://localhost:5000/uploads/" + avater : ""} />}
             <div className={cn("w-40 bg-[#211842] rounded flex flex-col items-center", { 'bg-[#9e7ffa]': position === 'left' })}>
                 {message.media != "" &&
                     <img
@@ -29,7 +29,7 @@ const Message = ({ avater, message, position }: {
                     {position === 'left' && <CheckMark status={message.messageStatus} />}
                 </p>
             </div>
-            {position === 'right' && <Avatar className="size-6" image={avater} />}
+            {position === 'right' && <Avatar className="size-6" image={avater != "" ? "http://localhost:5000/uploads/" + avater : ""} />}
         </div>
     )
 }

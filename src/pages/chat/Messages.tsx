@@ -20,7 +20,6 @@ const Messages = ({ messages, userId }: {
 
         const editMessage = async (id: string, messageStatus: string) => {
             if (messagesId.has(id)) return;
-            console.log('start');
             setMessagesId(prev => (new Set(prev).add(id)));
             try {
                 const res = await axiosInc.post('/message/update-message', {

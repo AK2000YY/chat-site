@@ -6,17 +6,18 @@ interface AvatarProp extends ImgHTMLAttributes<HTMLImageElement> {
     image: string
 }
 
-const Avatar: FC<AvatarProp> = ({ className, image }) => {
+const Avatar: FC<AvatarProp> = ({ children, className, image }) => {
     return (
-        <div>
+        <div className="relative">
             {
                 image === "" ?
-                    <RxPerson className={"text-white p-1 border-1 rounded-full"} /> :
+                    <RxPerson className={cn("text-white p-1 border-1 rounded-full", className)} /> :
                     <img
                         className={cn("size-10 rounded-full", className)}
-                        src={"http://localhost:5000/uploads/" + image}
+                        src={image}
                     />
             }
+            {children}
         </div>
     )
 }

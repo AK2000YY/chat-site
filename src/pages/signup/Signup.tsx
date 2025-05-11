@@ -50,10 +50,11 @@ const Signup = () => {
                 />
                 <div>
                     <Input
+                        className="mb-3"
                         name={"userName"}
                         placeholder="user name"
                     />
-                    <div className="flex gap-x-1">
+                    <div className="flex gap-x-1 mb-3">
                         <Input
                             name={"firstName"}
                             placeholder={"first name"}
@@ -64,10 +65,12 @@ const Signup = () => {
                         />
                     </div>
                     <Input
+                        className="mb-3"
                         name={"email"}
                         placeholder={"email"}
                     />
                     <Input
+                        className="mb-3"
                         name={"password"}
                         placeholder={"password"}
                     />

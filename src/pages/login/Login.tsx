@@ -46,6 +46,7 @@ const Login = () => {
                 />
                 <div>
                     <Input
+                        className="mb-3"
                         name={"email"}
                         placeholder={"email"}
                     />

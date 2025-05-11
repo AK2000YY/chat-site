@@ -7,7 +7,7 @@ const Input: FC<InputProps> = ({ className, children, ...props }) => {
     const myStyle = "w-full h-15 px-2 rounded-md text-white shadow-2xs bg-slate-700";
     return (
         <div
-            className="py-3 w-full"
+            className="w-full h-fit"
         >
             <input
                 className={cn(myStyle, className)}

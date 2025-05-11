@@ -1,15 +1,18 @@
-import { IoExitOutline, IoNotifications } from "react-icons/io5";
+import { IoExitOutline, IoInformationCircleSharp } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 import cn from "../utils/functions";
 import { FaUserFriends } from "react-icons/fa";
 import { TbHomeFilled } from "react-icons/tb";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
+import Modal from "./ui/Modal";
 
 
 
 const Nav = () => {
     const [selected, setSelected] = useState<string>("");
+    const [showModal, setShowModal] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const handleNavigation = (page: string) => {
@@ -27,18 +30,29 @@ const Nav = () => {
                 className={cn("size-9 p-1 mb-3 rounded-md  shadow cursor-pointer", { 'bg-[#9e7ffa]': selected === "friends" })}
                 onClick={() => handleNavigation("friends")}
             />
-            <IoNotifications
-                className={cn("size-9 p-1 mb-3 rounded-md shadow cursor-pointer", { 'bg-[#9e7ffa]': selected === "search" })}
-                onClick={() => handleNavigation("")}
-            />
-            <div className="hidden sm:block sm:grow"></div>
             <IoMdSettings
                 className={cn("size-9 p-1 mb-3 rounded-md shadow cursor-pointer", { 'bg-[#9e7ffa]': selected === "setting" })}
                 onClick={() => handleNavigation("setting")}
             />
+            <div className="hidden sm:block sm:grow"></div>
+            <IoInformationCircleSharp
+                className={cn("size-9 p-1 mb-3 rounded-md shadow cursor-pointer", { 'bg-[#9e7ffa]': selected === "info" })}
+                onClick={() => handleNavigation("info")}
+            />
             <IoExitOutline
                 className={cn("size-9 mb-3 rounded-md shadow cursor-pointer", "pl-1 text-red-600")}
+                onClick={() => {
+                    setShowModal(true);
+                }}
             />
+            {showModal &&
+                createPortal(
+                    <Modal
+                        onClose={() => setShowModal(false)}
+                    />,
+                    document.body
+                )
+            }
         </div>
     )
 }

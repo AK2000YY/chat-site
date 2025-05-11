@@ -15,6 +15,7 @@ import { ChatProvider } from "./context/ChatContext";
 import Setting from "./pages/setting/Setting";
 import Friends from "./pages/friends/Friends";
 import Navigation from "./pages/navigation/Navigation";
+import Info from "./pages/info/Info";
 
 const App = () => {
   const [isLoading, setIsLoading] = useState<Boolean>(true);
@@ -56,6 +57,7 @@ const App = () => {
             <Route index element={width < 640 ? <FriendsBox /> : <ChatBox />} />
           </Route>
           <Route path="/friends" element={<Friends />} />
+          <Route path="/info" element={<Info />} />
           <Route path="/setting" element={<Setting />} />
         </Route>
       </Routes >

@@ -1,6 +1,126 @@
+import { useContext, useState } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import Avatar from "../../componenets/ui/Avatar";
+import Form from "../../componenets/form/Form";
+import Input from "../../componenets/form/Input";
+import { TbCameraPlus } from "react-icons/tb";
+import Button from "../../componenets/ui/Button";
+import UserOptionChange from "./UserOptionChange";
+import { FaCheck } from "react-icons/fa6";
+import { IoCloseSharp } from "react-icons/io5";
+import axiosInc from "../../utils/axios";
+
 const Setting = () => {
+
+    const { user, setUser } = useContext(AuthContext)!;
+    const [preview, setPreview] = useState<string>("");
+    const [expandUsername, setExpandUsername] = useState<boolean>(false);
+    const [expandPassword, setExpandPassword] = useState<boolean>(false);
+
+    const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setPreview(url);
+        }
+    };
+
+    const updatePhoto = async (formData: FormData) => {
+        try {
+            const avater = await axiosInc.post('/auth/change-photo', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setPreview("")
+            setUser(prev => ({ ...prev, avater: avater.data }));
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
-        <div>Setting</div>
+        <div className="bg-[#110e21] w-[100%] h-[100%] sm:w-[50%] lg:w-[40%] mx-auto mb-3 sm:mb-0 rounded-xl self-center overflow-y-auto">
+            <Form
+                action={updatePhoto}
+                className="relative bg-transparent w-full sm:w-full h-fit lg:w-full py-10 items-center justify-start shadow-none"
+            >
+                <Avatar
+                    image={preview === "" ? user.avater ? "http://localhost:5000/uploads/" + user.avater : "" : preview}
+                    className="w-25 h-25"
+                >
+                    <label className="absolute bottom-0.5 right-0">
+                        <Input
+                            className="hidden absolute w-3 h-3"
+                            type="file"
+                            name="avatar"
+                            onChange={handlePhoto}
+                        />
+                        <TbCameraPlus className="bg-[#a07cfc] text-white rounded-full size-8 p-1" />
+                    </label>
+                </Avatar>
+                {preview != "" &&
+                    <div className="absolute top-[50%] right-5 translate-y-[-50%] flex">
+                        <Button
+                            type="submit"
+                            className="bg-green-500 w-fit h-fit p-2 rounded-full mr-2"
+                        >
+                            <FaCheck />
+                        </Button>
+                        <Button
+                            className="bg-red-500 w-fit h-fit p-2 rounded-full"
+                            onClick={() =>
+                                setPreview("")
+                            }
+                        >
+                            <IoCloseSharp />
+                        </Button>
+                    </div>
+                }
+            </Form>
+            <UserOptionChange
+                option="username"
+                isExpnad={expandUsername}
+                onExpnad={() => setExpandUsername(!expandUsername)}
+            >
+                {expandUsername &&
+                    <Form
+                        className="bg-transparent h-fit w-full sm:w-full lg:w-full py-4 flex-row items-center gap-2"
+                    >
+                        <Input
+                            className="bg-transparent h-8 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                            type="text"
+                            name="username"
+                        />
+                        <Button
+                            className="bg-[#a07cfc] text-white rounded-sm w-20 h-8 text-sm font-medium flex justify-center items-center"
+                        >Change</Button>
+                    </Form>
+                }
+            </UserOptionChange>
+            <UserOptionChange
+                option="password"
+                isExpnad={expandPassword}
+                onExpnad={() => setExpandPassword(!expandPassword)}
+            >
+                {expandPassword &&
+                    <Form className="bg-transparent h-fit w-full sm:w-full lg:w-full py-4">
+                        <Input
+                            className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                        />
+                        <Input
+                            className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                        />
+                        <Input
+                            className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                        />
+                        <Button
+                            className="bg-[#a07cfc] text-white rounded-sm w-full h-8 text-sm font-medium flex justify-center items-center"
+                        >Change</Button>
+                    </Form>
+                }
+            </UserOptionChange>
+        </div>
     )
 }
 

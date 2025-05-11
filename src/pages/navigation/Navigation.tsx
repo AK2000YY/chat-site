@@ -20,11 +20,9 @@ const Navigation = () => {
         const checkSentMessages = async () => {
             try {
                 const userMessages = await getUserMessages(user._id!);
-                console.log(userMessages);
                 const messagesRes = await axiosInc.post("/message/check-sent-message", {
                     messagesId: userMessages
                 });
-                console.log(messagesRes.data);
                 messagesRes.data.forEach((msg: Message) => {
                     updateMessage(msg._id!, msg.messageStatus);
                 });
@@ -46,8 +44,18 @@ const Navigation = () => {
             }
         }
 
+        const getFriends = async () => {
+            try {
+                const friendsRes = await axiosInc.get('/friend');
+                setChatInfo(prev => ({ ...prev, friends: friendsRes.data }));
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         checkSentMessages();
         getInfo();
+        getFriends();
     }, []);
 
     useEffect(() => {

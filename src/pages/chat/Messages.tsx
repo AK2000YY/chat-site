@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Msg from "../../types/message"
 import Message from "./Message"
 import axiosInc from "../../utils/axios";
-import { getBeforeId, getUnreadMessages, updateMessage } from "../../utils/idb";
+import { addMessage, getBeforeId, getUnreadMessages, updateMessage } from "../../utils/idb";
 import { chatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -12,15 +12,31 @@ const Messages = ({ messages, userId }: {
 }) => {
 
     const { user } = useContext(AuthContext)!;
-    const ref = useRef<HTMLDivElement>(null);
     const [messagesId, setMessagesId] = useState<Set<string>>(new Set());
+    const [messagesIdGet, setMessagesIdGet] = useState<Set<string>>(new Set());
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
+    const ref = useRef<HTMLDivElement>(null);
+    const refMessagesIdGet = useRef<Set<string>>(null);
+    const refMessagesId = useRef<Set<string>>(null);
+
+
+    useEffect(() => {
+        refMessagesIdGet.current = messagesIdGet;
+    }, [messagesIdGet])
+
+    useEffect(() => {
+        refMessagesId.current = messagesId;
+    }, [messagesId])
 
     useEffect(() => {
 
         const editMessage = async (id: string, messageStatus: string) => {
-            if (messagesId.has(id)) return;
-            setMessagesId(prev => (new Set(prev).add(id)));
+            if (refMessagesId.current!.has(id)) return;
+            setMessagesId(prev => {
+                const set = new Set(prev);
+                set.add(id);
+                return new Set(set);
+            })
             try {
                 const res = await axiosInc.post('/message/update-message', {
                     messageId: id
@@ -36,38 +52,56 @@ const Messages = ({ messages, userId }: {
             setMessagesId(prev => {
                 const set = new Set(prev);
                 set.delete(id);
-                return set;
+                return new Set(set);
             });
         }
 
-        const scrollToNewMessage = async () => {
+        const getNewMessages = async (id: string) => {
+            if (refMessagesIdGet.current!.has(id)) return;
             try {
-                const messages = await getBeforeId(chatInfo.selectedUser!);
-                if (chatInfo.selectedUser != "" && messages.length > 0 && chatInfo.messages.length > 0 && messages[messages.length - 1]._id === chatInfo.messages[chatInfo.messages.length - 1]._id && ref.current) {
-                    ref.current.scrollTo({
-                        top: ref.current.scrollHeight,
-                        behavior: 'smooth'
+                setMessagesIdGet(prev => {
+                    const set = new Set(prev);
+                    set.add(id);
+                    return new Set(set);
+                });
+                await new Promise(res => setTimeout(res, 4000));
+                let newMessages = await getBeforeId(chatInfo.selectedUser!, id);
+                if (newMessages.length === 0) {
+                    const serverMessages = await axiosInc.post('/message/get-messages', {
+                        friendId: chatInfo.selectedUser,
+                        messageId: id
+                    });
+                    newMessages = serverMessages.data;
+                    await addMessage(newMessages);
+                }
+                if (newMessages.length != 0) {
+                    setChatInfo(prev => ({ ...prev, messages: [...newMessages, ...prev.messages] }));
+                    setMessagesIdGet(prev => {
+                        const set = new Set(prev);
+                        set.delete(id);
+                        return new Set(set);
                     });
                 }
             } catch (error) {
                 console.log(error);
+                setMessagesIdGet(prev => {
+                    const set = new Set(prev);
+                    set.delete(id);
+                    return new Set(set);
+                });
             }
         }
 
-        // const deleteFromStartOrEnd = () => {
-        // TODO()
-        // }
-
         const observer = new IntersectionObserver(
             (entries) => {
-                // if (entries.length > 0) {
-                // TODO()
-                // }
                 entries.forEach((entry) => {
                     const messageId = entry.target.getAttribute('message-id');
                     const messageStatus = entry.target.getAttribute('message-status');
                     if (entry.isIntersecting && messageStatus === 'ok') {
                         editMessage(messageId!, 'read');
+                    }
+                    if (entry.isIntersecting && chatInfo.messages.length >= 20 && chatInfo.messages.findIndex(ele => entry.target.getAttribute('message-id') == ele._id) === 3) {
+                        getNewMessages(chatInfo.messages[0]._id!);
                     }
                 })
             },
@@ -81,8 +115,6 @@ const Messages = ({ messages, userId }: {
                 observer.observe(ele);
             });
 
-        scrollToNewMessage();
-
         return () => {
             if (ref.current) {
                 observer.disconnect()
@@ -93,9 +125,9 @@ const Messages = ({ messages, userId }: {
     return (
         <div
             ref={ref}
-            className="overflow-y-auto p-2 grow"
+            className="overflow-y-auto p-2 grow flex-col-reverse flex"
         >
-            {messages.map(ele =>
+            {messages.slice().reverse().map(ele =>
                 <Message
                     key={ele._id}
                     avater={ele.sender === user._id! ? user.avater! : chatInfo.friends.find(fr => fr._id! === ele.sender)!.avater!}

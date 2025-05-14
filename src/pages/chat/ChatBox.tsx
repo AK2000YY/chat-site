@@ -18,16 +18,21 @@ const ChatBox = () => {
     useEffect(() => {
         let ignore = false;
         const getChatMessages = async () => {
-            let messageRes = await getBeforeId(chatInfo.selectedUser!);
-            if (messageRes.length === 0) {
-                const messageRemote = await axiosInc.post("/message/get-messages", {
-                    friendId: chatInfo.selectedUser
-                });
-                messageRes = messageRemote.data;
-                addMessage(messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }));
-            }
-            if (!ignore) {
-                setChatInfo((prev) => ({ ...prev, messages: messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }) }));
+            try {
+                let messageRes = await getBeforeId(chatInfo.selectedUser!);
+                console.log(chatInfo.selectedUser);
+                if (messageRes.length === 0) {
+                    const messageRemote = await axiosInc.post("/message/get-messages", {
+                        friendId: chatInfo.selectedUser
+                    });
+                    messageRes = messageRemote.data;
+                    addMessage(messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }));
+                }
+                if (!ignore) {
+                    setChatInfo((prev) => ({ ...prev, messages: messageRes.map(ele => { return { ...ele, friend: ele.sender === user._id ? ele.receiver : ele.sender } }) }));
+                }
+            } catch (error) {
+                console.log(error)
             }
         }
         if (chatInfo.selectedUser)

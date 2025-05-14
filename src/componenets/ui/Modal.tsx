@@ -24,7 +24,7 @@ const Modal = ({ onClose }: {
             className="bg-slate-700/80 absolute top-0 w-screen h-screen flex justify-center items-center"
         >
             <div
-                className="w-[90%] h-fit p-3 bg-slate-950 text-white rounded-xl"
+                className="w-[90%] sm:w-[70%] md:w-[50%] lg:w-[30%] h-fit p-3 bg-slate-950 text-white rounded-xl"
             >
                 <h1 className="mb-3">Logout</h1>
                 <p className="mb-3">Are you sure to logout?</p>
@@ -36,7 +36,7 @@ const Modal = ({ onClose }: {
                         cancel
                     </Button>
                     <Form
-                        className="w-fit h-fit p-0"
+                        className="w-fit sm:w-fit lg:w-fit h-fit p-0"
                         action={logout}
                     >
                         <Button

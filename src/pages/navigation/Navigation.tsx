@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import Nav from "../../componenets/Nav"
 import useScreenWidth from "../../hooks/ScreenWidth"
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { chatContext } from "../../context/ChatContext";
 import { addMessage, getBeforeId, getUnreadMessages, getUserMessages, updateMessage } from "../../utils/idb";
@@ -13,6 +13,14 @@ const Navigation = () => {
     const { user } = useContext(AuthContext)!;
     const { chatInfo, setChatInfo } = useContext(chatContext)!;
     const width = useScreenWidth();
+    const selectedUserRef = useRef(chatInfo.selectedUser);
+    const messagesRef = useRef(chatInfo.messages);
+
+
+    useEffect(() => {
+        selectedUserRef.current = chatInfo.selectedUser;
+        messagesRef.current = chatInfo.messages;
+    }, [chatInfo.selectedUser])
 
     //corrected
     useEffect(() => {
@@ -67,9 +75,9 @@ const Navigation = () => {
             const unreadMessageRes = await getUnreadMessages(user._id!);
             setChatInfo((prev) => ({ ...prev, changes: unreadMessageRes }));
 
-            if (chatInfo.selectedUser === message.sender) {
-                const messagesdb = await getBeforeId(chatInfo.selectedUser!);
-                if (chatInfo.messages.length < 20 || messagesdb[messagesdb.length - 2]._id === chatInfo.messages[chatInfo.messages.length - 1]._id) {
+            if (selectedUserRef.current === message.sender) {
+                const messagesdb = await getBeforeId(selectedUserRef.current!);
+                if (messagesRef.current.length < 20 || messagesdb[messagesdb.length - 2]._id === messagesRef.current[messagesRef.current.length - 1]._id) {
                     setChatInfo((prev) => ({ ...prev, messages: [...prev.messages, { ...message, friend: message.sender }] }));
                 }
             }
@@ -92,7 +100,7 @@ const Navigation = () => {
         return () => {
             socket.disconnect();
         }
-    }, [chatInfo.selectedUser]);
+    }, []);
 
     return (
         <div className="bg-slate-950 p-3 w-screen h-screen flex flex-col sm:flex-row">

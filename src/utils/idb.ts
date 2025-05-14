@@ -4,7 +4,7 @@ import Message from '../types/message';
 const DB_NAME = 'chat';
 const STORE_NAME = 'messages';
 const VERSION = 1;
-const LIMIT = 40;
+const LIMIT = 30;
 
 let dbPromise: Promise<IDBPDatabase>;
 
@@ -147,31 +147,6 @@ const getBeforeId = async (friendId: string, messageId?: string): Promise<Messag
     return messages.reverse();
 }
 
-const getAfterId = async (friendId: string, messageId: string): Promise<Message[]> => {
-    const messages: Message[] = [];
-    const db = await initDB();
-    const tr = db.transaction(STORE_NAME);
-    const store = tr.objectStore(STORE_NAME);
-    const index = store.index("friend_id");
-    let range;
-
-    range = IDBKeyRange.bound(
-        [friendId, messageId],
-        [friendId, '\uffff'],
-        true,
-        false
-    )
-
-    let cursor = await index.openCursor(range, 'next');
-
-    while (cursor && messages.length < LIMIT) {
-        messages.push(cursor.value);
-        cursor = await cursor.continue();
-    }
-
-    return messages;
-}
-
 const clearData = async () => {
     const db = await initDB();
     const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -180,4 +155,4 @@ const clearData = async () => {
 }
 
 
-export { addMessage, getUnreadMessages, getUserMessages, updateMessage, deleteMessage, getBeforeId, getAfterId, clearData }
+export { addMessage, getUnreadMessages, getUserMessages, updateMessage, deleteMessage, getBeforeId, clearData }

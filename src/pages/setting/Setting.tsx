@@ -9,13 +9,14 @@ import UserOptionChange from "./UserOptionChange";
 import { FaCheck } from "react-icons/fa6";
 import { IoCloseSharp } from "react-icons/io5";
 import axiosInc from "../../utils/axios";
+import toast from "react-hot-toast";
 
 const Setting = () => {
 
     const { user, setUser } = useContext(AuthContext)!;
     const [preview, setPreview] = useState<string>("");
-    const [expandUsername, setExpandUsername] = useState<boolean>(false);
-    const [expandPassword, setExpandPassword] = useState<boolean>(false);
+    const [expandUsername, setExpandUsername] = useState<boolean>(true);
+    const [expandPassword, setExpandPassword] = useState<boolean>(true);
 
     const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -34,8 +35,37 @@ const Setting = () => {
             });
             setPreview("")
             setUser(prev => ({ ...prev, avater: avater.data }));
+            toast.success("photo is changed!", { id: 'photo' })
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    const updateUsername = async (formData: FormData) => {
+        try {
+            const username = await axiosInc.post('/auth/change-username', {
+                username: formData.get('username')
+            });
+            setUser(prev => ({ ...prev, userName: username.data }));
+            toast.success("username is changed!", { id: 'username' });
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const updatePassword = async (formData: FormData) => {
+        try {
+            if (formData.get('confPassword') != formData.get('newPassword')) {
+                toast.error("the passwords aren't matched!");
+                return;
+            }
+            await axiosInc.post('/auth/change-password', {
+                password: formData.get('password'),
+                newPassword: formData.get('newPassword')
+            });
+            toast.success("password is changed!", { id: 'password' });
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -85,15 +115,18 @@ const Setting = () => {
             >
                 {expandUsername &&
                     <Form
+                        action={updateUsername}
                         className="bg-transparent h-fit w-full sm:w-full lg:w-full py-4 flex-row items-center gap-2"
                     >
                         <Input
                             className="bg-transparent h-8 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
                             type="text"
                             name="username"
+                            placeholder="username"
                         />
                         <Button
                             className="bg-[#a07cfc] text-white rounded-sm w-20 h-8 text-sm font-medium flex justify-center items-center"
+                            type="submit"
                         >Change</Button>
                     </Form>
                 }
@@ -104,15 +137,24 @@ const Setting = () => {
                 onExpnad={() => setExpandPassword(!expandPassword)}
             >
                 {expandPassword &&
-                    <Form className="bg-transparent h-fit w-full sm:w-full lg:w-full py-4">
+                    <Form
+                        className="bg-transparent h-fit w-full sm:w-full lg:w-full py-4"
+                        action={updatePassword}
+                    >
                         <Input
                             className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                            name="password"
+                            placeholder="password"
                         />
                         <Input
                             className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                            name="newPassword"
+                            placeholder="new password"
                         />
                         <Input
                             className="bg-transparent h-8 mb-4 border-b-gray-200 border-b-1 rounded-none focus:outline-0"
+                            name="confPassword"
+                            placeholder="confirm new password"
                         />
                         <Button
                             className="bg-[#a07cfc] text-white rounded-sm w-full h-8 text-sm font-medium flex justify-center items-center"
